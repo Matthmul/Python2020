@@ -79,7 +79,7 @@ class Frac:
         if isinstance(other, Frac):
             return Frac(self.x * other.x, self.y * other.y)
         else:
-            return Frac(self.x * other, self.y * other)
+            return Frac(self.x * other, self.y)
 
     __rmul__ = __mul__  # int*frac
 
@@ -154,9 +154,9 @@ class TestFrac(unittest.TestCase):
     def test_mul(self):
         self.assertEqual(self.f8 * self.f4, Frac(30, 1))
         self.assertEqual(self.f9 * self.f2, Frac(0, 1))
-        self.assertEqual(self.f9 * 10, Frac(50, 1))
+        self.assertEqual(self.f9 * 10, Frac(500, 1))
         self.assertEqual(10 * self.f2, Frac(0, 1))
-        self.assertEqual(self.f9 * 10.5, Frac(50, 1))
+        self.assertEqual(self.f9 * 10.5, Frac(525, 1))
         self.assertEqual(10.5 * self.f2, Frac(0, 1))
 
     def test_div(self):
