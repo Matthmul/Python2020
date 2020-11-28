@@ -11,11 +11,11 @@ class Frac:
                     self.x = x.as_integer_ratio()[0] * y.as_integer_ratio()[1]
                     self.y = y.as_integer_ratio()[0] * x.as_integer_ratio()[1]
                 elif isinstance(x, float):
-                    self.x = x.as_integer_ratio()[0] * y
+                    self.x = x.as_integer_ratio()[0]
                     self.y = y * x.as_integer_ratio()[1]
                 elif isinstance(y, float):
                     self.x = x * y.as_integer_ratio()[1]
-                    self.y = y.as_integer_ratio()[0] * x
+                    self.y = y.as_integer_ratio()[0]
             else:
                 self.x = x
                 self.y = y
@@ -32,8 +32,8 @@ class Frac:
 
     def __str__(self):
         if self.y == 1:
-            return '{}'.format(self.x)
-        return '{}/{}'.format(self.x, self.y)
+            return '{}'.format(int(self.x))
+        return '{}/{}'.format(int(self.x), int(self.y))
 
     def __repr__(self):
         return 'Frac({}, {})'.format(self.x, self.y)
@@ -89,17 +89,15 @@ class Frac:
 
     def __truediv__(self, other):  # frac1/frac2, frac/int, Python 3
         if isinstance(other, Frac):
-            other.x, other.y = other.y, other.x
-            return self * other
+            return self * Frac(other.y, other.x)
         else:
             return self * Frac(1, other)
 
     def __rtruediv__(self, other):  # int/frac, Python 3
         if isinstance(other, Frac):
-            self.x, self.y = self.y, self.x
-            return self * other
+            return Frac(self.y, self.x) * other
         else:
-            return self * Frac(other)
+            return Frac(other) * Frac(self.y, self.x)
 
     # operatory jednoargumentowe
     def __pos__(self):  # +frac = (+1)*frac
@@ -136,6 +134,11 @@ class TestFrac(unittest.TestCase):
         self.f9 = Frac(100, 2)
         self.f10 = Frac(6, 2)
 
+    def test_print(self):
+        self.assertEqual(self.f3.__str__(), "3")
+        self.assertEqual(self.f7.__str__(), "1/6")
+        self.assertEqual(self.f10.__str__(), "3")
+
     def test_add(self):
         self.assertEqual(Frac(1, 1) + Frac(2, 2), Frac(2, 1))
         self.assertEqual(self.f4 + self.f7, Frac(19, 6))
@@ -168,6 +171,7 @@ class TestFrac(unittest.TestCase):
         self.assertEqual(self.f7 / 5, Frac(1, 30))
         self.assertEqual(5 / self.f3, Frac(5, 3))
         self.assertEqual(self.f7 / 5.5, Frac(1, 33))
+        self.assertEqual(5.5 / self.f7, Frac(33, 1))
 
     def test_lt(self):
         self.assertEqual(self.f7 > self.f1, True)
