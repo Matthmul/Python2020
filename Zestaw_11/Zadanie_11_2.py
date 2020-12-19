@@ -19,6 +19,9 @@ def bubblesort(L, left, right, filename):
             if L[j] > L[j + 1]:
                 swap(L, j + 1, j)
                 im = plt.scatter(L, list(range(0, len(L))), c='r', animated=True)
+                plt.ylabel("numer pozycji")
+                plt.xlabel("liczba na pozycji")
+                plt.title("Sortowanie bubblesort")
                 ims.append([im])
 
     ani = animation.ArtistAnimation(fig, ims, interval=50, blit=True,
