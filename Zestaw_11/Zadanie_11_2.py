@@ -26,9 +26,9 @@ def bubblesort(L, left, right, filename):
 
     ani = animation.ArtistAnimation(fig, ims, interval=50, blit=True,
                                     repeat_delay=1000)
-    ani.save(filename)
+    # ani.save(filename)
 
-    # plt.show()
+    plt.show()
 
 
 if __name__ == "__main__":

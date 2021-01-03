@@ -13,15 +13,14 @@ class RandomListNumbers:
 
     def rand_sorted_numbers(self):
         self.int_number_list = list()
-        sorted_number_list = list(range(self.size, 0, -1))
+        sorted_number_list = list(range(0, self.size))
+        incorrect_number = False
         for i in range(0, self.size):
-            rand = random.randint(0, 2)
-            if rand == 0:
-                rand = random.choice(sorted_number_list)
-                self.int_number_list.append(rand)
-                sorted_number_list.remove(rand)
+            if incorrect_number or len(sorted_number_list) <= 1:
+                self.int_number_list.append(sorted_number_list.pop(0))
             else:
-                self.int_number_list.append(sorted_number_list.pop())
+                self.int_number_list.append(sorted_number_list.pop(1))
+            incorrect_number = not incorrect_number
         return self.int_number_list
 
     def rand_sorted_numbers_rev(self):
