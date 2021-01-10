@@ -48,6 +48,53 @@ class RangeTree:
         else:
             return self.__find_node(current_node.right, data)
 
+    def range_searching(self, x1, x2):
+        if x1 > x2:
+            raise ValueError("Zly zakres")
+        res = []
+        root = self.__find_x_split(self.root, x1, x2)
+        if root.is_leaf():
+            if x1 <= root.data <= x2:
+                res.append(root.data)
+            return res
+        else:
+            res.append(root.data)
+            res = res + self.__range_searching_left(root.left, x1)
+            res = res + self.__range_searching_right(root.right, x2)
+            return res
+
+    def __range_searching_left(self, root, x1):
+        res = []
+        if x1 <= root.data:
+            res.append(root.data)
+            if root.left is not None:
+                res = res + self.__range_searching_left(root.left, x1)
+            if root.right is not None:
+                res = res + self.__range_searching_left(root.right, x1)
+        elif root.right is not None:
+            res = self.__range_searching_left(root.right, x1)
+        return res
+
+    def __range_searching_right(self, root, x2):
+        res = []
+        if x2 >= root.data:
+            res.append(root.data)
+            if root.right is not None:
+                res = res + self.__range_searching_right(root.right, x2)
+            if root.left is not None:
+                res = res + self.__range_searching_right(root.left, x2)
+        elif root.left is not None:
+            res = self.__range_searching_right(root.left, x2)
+        return res
+
+    def __find_x_split(self, root, x1, x2):
+        if not root.is_leaf() and (x2 <= root.data or x1 > root.data):
+            if x2 <= root.data and root.left is not None:
+                return self.__find_x_split(root.left, x1, x2)
+            elif root.right is not None:
+                return self.__find_x_split(root.right, x1, x2)
+        return root
+
     def print_tree(self):
         if self.root is None:
             raise Exception("Empty tree")
@@ -107,6 +154,36 @@ class TestList(unittest.TestCase):
     def setUp(self):
         self.rangetree = RangeTree()
         self.rangetree_10 = RangeTree(10)
+        self.rangetree_20 = RangeTree(42)
+        self.rangetree_40 = RangeTree()
+        self.rangetree_20.insert(21)
+        self.rangetree_20.insert(57)
+        self.rangetree_20.insert(15)
+        self.rangetree_20.insert(33)
+        self.rangetree_20.insert(52)
+        self.rangetree_20.insert(65)
+        self.rangetree_20.insert(6)
+        self.rangetree_20.insert(17)
+        self.rangetree_20.insert(24)
+        self.rangetree_20.insert(42)
+        self.rangetree_20.insert(51)
+        self.rangetree_20.insert(57)
+        self.rangetree_20.insert(65)
+        self.rangetree_20.insert(73)
+        self.rangetree_20.insert(6)
+        self.rangetree_20.insert(15)
+        self.rangetree_20.insert(17)
+        self.rangetree_20.insert(21)
+        self.rangetree_20.insert(24)
+        self.rangetree_20.insert(33)
+        self.rangetree_20.insert(51)
+        self.rangetree_20.insert(52)
+        self.rangetree_20.insert(73)
+        self.rangetree_20.insert(78)
+        for i in range(20, 40):
+            self.rangetree_40.insert(i)
+        for i in range(0, 20):
+            self.rangetree_40.insert(i)
 
     def test_insert(self):
         self.rangetree_10.insert(5)
@@ -122,6 +199,15 @@ class TestList(unittest.TestCase):
             self.assertEqual(self.rangetree.find(20), False)
         the_exception = cm.exception
         self.assertEqual(str(the_exception.args[0]), "Empty tree")
+
+    def test_range_searching(self):
+        self.assertEqual(self.rangetree_20.range_searching(20, 30), [21, 21, 24, 24])
+        self.assertEqual(self.rangetree_20.range_searching(20, 40), [21, 21, 33, 24, 33, 24])
+        self.assertEqual(self.rangetree_20.range_searching(10, 50), [42, 21, 15, 15, 17, 17, 21, 33, 24, 24, 33, 42])
+        self.assertEqual(self.rangetree_20.range_searching(60, 80), [65, 65, 73, 78, 73])
+        self.assertEqual(self.rangetree_20.range_searching(0, 5), [])
+        self.assertEqual(self.rangetree_20.range_searching(100, 105), [])
+        self.assertEqual(self.rangetree_20.range_searching(57, 57), [57])
 
     def tearDown(self):
         pass
