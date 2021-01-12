@@ -1,4 +1,4 @@
-from Projekt.Node import Node
+from Projekt.node import Node
 
 
 class RangeTree:
@@ -168,7 +168,7 @@ class RangeTree:
         if self.root is None:
             raise Exception("Empty tree")
         if x1 > x2:
-            raise ValueError("Zly zakres")
+            raise ValueError("Wrong scope")
         res = []
         root = self.__find_x_split(self.root, x1, x2)
         if root.is_leaf():
@@ -385,73 +385,3 @@ class RangeTree:
             res = res + self.__postorder_traversal(current_node.right)
             res.append(current_node.data)
         return res
-
-
-import unittest
-
-
-class TestList(unittest.TestCase):
-    def setUp(self):
-        self.rangetree = RangeTree()
-        self.rangetree_10 = RangeTree(10)
-        self.rangetree_20 = RangeTree(42)
-        self.rangetree_40 = RangeTree()
-        self.rangetree_20.insert(21)
-        self.rangetree_20.insert(57)
-        self.rangetree_20.insert(15)
-        self.rangetree_20.insert(33)
-        self.rangetree_20.insert(52)
-        self.rangetree_20.insert(65)
-        self.rangetree_20.insert(6)
-        self.rangetree_20.insert(17)
-        self.rangetree_20.insert(24)
-        self.rangetree_20.insert(42)
-        self.rangetree_20.insert(51)
-        self.rangetree_20.insert(57)
-        self.rangetree_20.insert(65)
-        self.rangetree_20.insert(73)
-        self.rangetree_20.insert(6)
-        self.rangetree_20.insert(15)
-        self.rangetree_20.insert(17)
-        self.rangetree_20.insert(21)
-        self.rangetree_20.insert(24)
-        self.rangetree_20.insert(33)
-        self.rangetree_20.insert(51)
-        self.rangetree_20.insert(52)
-        self.rangetree_20.insert(73)
-        self.rangetree_20.insert(78)
-        for i in range(20, 40):
-            self.rangetree_40.insert(i)
-        for i in range(0, 20):
-            self.rangetree_40.insert(i)
-
-    def test_insert(self):
-        self.rangetree_10.insert(5)
-        self.rangetree_10.insert(11)
-        self.assertEqual(self.rangetree_10.inorder_traversal(), [5, 10, 11])
-        self.assertEqual(self.rangetree_10.preorder_traversal(), [10, 5, 11])
-        self.assertEqual(self.rangetree_10.postorder_traversal(), [5, 11, 10])
-
-    def test_find(self):
-        self.assertEqual(self.rangetree_10.find(10), True)
-        self.assertEqual(self.rangetree_10.find(20), False)
-        with self.assertRaises(Exception) as cm:
-            self.assertEqual(self.rangetree.find(20), False)
-        the_exception = cm.exception
-        self.assertEqual(str(the_exception.args[0]), "Empty tree")
-
-    def test_range_searching(self):
-        self.assertEqual(self.rangetree_20.range_searching(20, 30), [21, 21, 24, 24])
-        self.assertEqual(self.rangetree_20.range_searching(20, 40), [21, 21, 33, 24, 33, 24])
-        self.assertEqual(self.rangetree_20.range_searching(10, 50), [42, 21, 15, 15, 17, 17, 21, 33, 24, 24, 33, 42])
-        self.assertEqual(self.rangetree_20.range_searching(60, 80), [65, 65, 73, 78, 73])
-        self.assertEqual(self.rangetree_20.range_searching(0, 5), [])
-        self.assertEqual(self.rangetree_20.range_searching(100, 105), [])
-        self.assertEqual(self.rangetree_20.range_searching(57, 57), [57])
-
-    def tearDown(self):
-        pass
-
-
-if __name__ == '__main__':
-    unittest.main()  # uruchamia wszystkie testy
