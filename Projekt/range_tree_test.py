@@ -48,6 +48,45 @@ class TestList(unittest.TestCase):
         self.assertEqual(self.rangetree_1.preorder_traversal(), [10, 5, 11])
         self.assertEqual(self.rangetree_1.postorder_traversal(), [5, 11, 10])
 
+    def test_min(self):
+        self.assertEqual(self.rangetree_1.minimum_value(), 10)
+        self.assertEqual(self.rangetree_2.minimum_value(), 6)
+        self.assertEqual(self.rangetree_3.minimum_value(), 0)
+
+    def test_max(self):
+        self.assertEqual(self.rangetree_1.maximum_value(), 10)
+        self.assertEqual(self.rangetree_2.maximum_value(), 78)
+        self.assertEqual(self.rangetree_3.maximum_value(), 39)
+
+    def test_delete_and_print(self):
+        self.rangetree_1.insert(5)
+        self.rangetree_1.insert(11)
+        self.assertEqual(self.rangetree_1.delete(5), True)
+        self.assertEqual(self.rangetree_1.inorder_traversal(), [10, 11])
+        self.assertEqual(self.rangetree_1.preorder_traversal(), [10, 11])
+        self.assertEqual(self.rangetree_1.postorder_traversal(), [11, 10])
+        self.assertEqual(self.rangetree_1.delete(10), True)
+        self.assertEqual(self.rangetree_1.inorder_traversal(), [11])
+        self.assertEqual(self.rangetree_1.preorder_traversal(), [11])
+        self.assertEqual(self.rangetree_1.postorder_traversal(), [11])
+        self.assertEqual(self.rangetree_1.delete(11), True)
+        with self.assertRaises(Exception) as cm:
+            self.assertEqual(self.rangetree_1.inorder_traversal(), [])
+            self.assertEqual(self.rangetree_1.preorder_traversal(), [])
+            self.assertEqual(self.rangetree_1.postorder_traversal(), [])
+        the_exception = cm.exception
+        self.assertEqual(str(the_exception.args[0]), "Empty tree")
+        self.assertEqual(self.rangetree_1.delete(11), False)
+
+        self.assertEqual(self.rangetree_2.delete(6), True)
+        self.assertEqual(self.rangetree_2.postorder_traversal(),
+                         [6, 15, 15, 17, 21, 21, 17, 24, 33, 33, 42, 42, 24, 51, 52, 52, 57, 57, 65, 73, 78, 73, 65,
+                          51])
+        self.assertEqual(self.rangetree_2.delete(78), True)
+        self.assertEqual(self.rangetree_2.postorder_traversal(),
+                         [6, 15, 15, 17, 21, 21, 17, 24, 33, 33, 42, 42, 24, 51, 52, 52, 57, 57, 65, 73, 73, 65,
+                          51])
+
     def test_find(self):
         with self.assertRaises(Exception) as cm:
             self.assertEqual(self.rangetree.find(20), False)

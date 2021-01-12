@@ -17,6 +17,15 @@ class RangeTree:
     insert(data)
         Dadanie podanej liczby do drzewa
 
+    delete(data)
+        Usuniecie podanej liczby do drzewa
+
+    minimum_value(current_node)
+        Wyszukanie najmniejszej wartosci
+
+    maximum_value(self, current_node)
+        Wyszukanie najwiekszej wartosci
+
     find(data)
         Sprawdzenie czy istnieje dna liczba w drzewie
 
@@ -91,13 +100,134 @@ class RangeTree:
             else:
                 self.__insert_node(current_node.right, node)
 
+    def delete(self, node):
+        """Usuniecie wartosci z drzewa
+
+        Parameters
+        ----------
+        node : Node, int
+            Liczba lub Node ktory bedzie dodany do drzewa
+
+        Returns
+        -------
+        bool
+            True jesli usunieto, False jesli nie usunieto
+        """
+
+        if type(node) == int:
+            node = Node(node)
+
+        parent = None
+        curr = self.root
+
+        while curr is not None and curr.data != node.data:
+            parent = curr
+            if node.data < curr.data:
+                curr = curr.left
+            else:
+                curr = curr.right
+
+        if curr is None:
+            return False
+
+        if curr.left is None and curr.right is None:
+
+            if curr != self.root:
+                if parent.left == curr:
+                    parent.left = None
+                else:
+                    parent.right = None
+
+            else:
+                self.root = None
+
+        elif curr.left and curr.right:
+            successor = self.minimum_value(curr.right)
+            val = successor
+            self.delete(successor)
+            curr.data = val
+
+        else:
+            if curr.left:
+                child = curr.left
+            else:
+                child = curr.right
+
+            if curr != self.root:
+                if curr == parent.left:
+                    parent.left = child
+                else:
+                    parent.right = child
+            else:
+                self.root = child
+        return True
+
+    def minimum_value(self, current_node=None):
+        """Szuka najmniejszej wartosci w drzewie
+
+        Parameters
+        ----------
+        current_node : Node
+            Aktualny node
+
+        Raises
+        ------
+        Exception
+            Jeśli drzewo nie posiada korzenia
+
+        Returns
+        -------
+        int
+            Zawartosc najmniejszeogo noda
+        """
+        if self.root is None:
+            raise Exception("Empty tree")
+
+        if current_node is None:
+            current_node = self.root
+
+        if current_node.left is not None:
+            return self.minimum_value(current_node.left)
+
+        return current_node.data
+
+    def maximum_value(self, current_node=None):
+        """Szuka najwiekszej wartosci w drzewie
+
+        Parameters
+        ----------
+        current_node : Node
+            Aktualny node
+
+        Raises
+        ------
+        Exception
+            Jeśli drzewo nie posiada korzenia
+
+        Returns
+        -------
+        int
+            Zawartosc najwiekszego noda
+        """
+
+        if self.root is None:
+            raise Exception("Empty tree")
+
+        if current_node is None:
+            current_node = self.root
+
+        if current_node.right is not None:
+            return self.maximum_value(current_node.right)
+
+        return current_node.data
+
     def find(self, data):
         """Sprawdza czy podana liczba lub Node znjaduje sie w drzewie
 
         Parameters
         ----------
         data : Node, int
-            The sound the animal makes (default is None)
+            Wartosc lub node kotryu jest szukany
 
         Raises
         ------
