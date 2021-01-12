@@ -93,11 +93,11 @@ class TestList(unittest.TestCase):
         the_exception = cm.exception
         self.assertEqual(str(the_exception.args[0]), "Empty tree")
 
-        self.assertEqual(self.rangetree_1.find(10), True)
-        self.assertEqual(self.rangetree_1.find(20), False)
+        self.assertEqual(self.rangetree_1.find(10)[0], True)
+        self.assertEqual(self.rangetree_1.find(20)[0], False)
 
-        self.assertEqual(self.rangetree_2.find(10), False)
-        self.assertEqual(self.rangetree_2.find(21), True)
+        self.assertEqual(self.rangetree_2.find(10)[0], False)
+        self.assertEqual(self.rangetree_2.find(21)[0], True)
 
     def test_range_searching(self):
         with self.assertRaises(Exception) as cm:

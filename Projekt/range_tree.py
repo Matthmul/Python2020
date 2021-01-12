@@ -23,7 +23,7 @@ class RangeTree:
     minimum_value(current_node)
         Wyszukanie najmniejszej wartosci
 
-    maximum_value(self, current_node)
+    maximum_value(current_node)
         Wyszukanie najwiekszej wartosci
 
     find(data)
@@ -236,8 +236,8 @@ class RangeTree:
 
         Returns
         -------
-        bool
-            True jesli istnieje, False jesli nie istnieje
+        bool, Node
+            True oraz wskaznik do noda jesli istnieje, False oraz None jesli nie istnieje
         """
 
         if type(data) == int:
@@ -259,14 +259,14 @@ class RangeTree:
 
         Returns
         -------
-        bool
-            True jesli istnieje, False jesli nie istnieje
+        bool, Node
+            True oraz wskaznik do noda jesli istnieje, False oraz None jesli nie istnieje
         """
 
         if current_node is None:
-            return False
+            return False, current_node
         elif node.data == current_node.data:
-            return True
+            return True, current_node
         elif node.data <= current_node.data:
             return self.__find_node(current_node.left, node)
         else:
