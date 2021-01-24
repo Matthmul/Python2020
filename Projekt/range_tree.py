@@ -9,7 +9,7 @@ class RangeTree:
 
     Attributes
     --------
-    root : Node, int
+    root
         Korzen dla drzewa, jesli podana zostanie liczba zostanie utworzony przy pomocy niej Node
 
     Methods
@@ -46,31 +46,27 @@ class RangeTree:
 
     """
 
-    def __init__(self, root=None):
+    def __init__(self, *datas):
         """
         Parameters
         ----------
-        root : Node, int
+        root
             Node ktory bedzie korzeniem
         """
-
-        if root is not None:
-            if type(root) == int:
-                root = Node(root)
-            if type(root) != Node:
-                raise Exception("Wrong type of variable")
-        self.root = root
+        self.root = None
+        for data in datas:
+            self.insert(data)
 
     def insert(self, data):
         """Dodanie nowej wartosci do drzewa
 
         Parameters
         ----------
-        data : Node, int
+        data
             Liczba lub Node ktory bedzie dodany do drzewa
         """
 
-        if type(data) == int:
+        if type(data) != Node:
             data = Node(data)
 
         if self.root is None:
@@ -105,7 +101,7 @@ class RangeTree:
 
         Parameters
         ----------
-        node : Node, int
+        node
             Liczba lub Node ktory bedzie dodany do drzewa
 
         Returns
@@ -114,7 +110,7 @@ class RangeTree:
             True jesli usunieto, False jesli nie usunieto
         """
 
-        if type(node) == int:
+        if type(node) != Node:
             node = Node(node)
 
         parent = None
@@ -170,18 +166,13 @@ class RangeTree:
         current_node : Node
             Aktualny node
 
-        Raises
-        ------
-        Exception
-            Jeśli drzewo nie posiada korzenia
-
         Returns
         -------
-        int
+        number
             Zawartosc najmniejszeogo noda
         """
         if self.root is None:
-            raise Exception("Empty tree")
+            return None
 
         if current_node is None:
             current_node = self.root
@@ -199,19 +190,14 @@ class RangeTree:
         current_node : Node
             Aktualny node
 
-        Raises
-        ------
-        Exception
-            Jeśli drzewo nie posiada korzenia
-
         Returns
         -------
-        int
+        number
             Zawartosc najwiekszego noda
         """
 
         if self.root is None:
-            raise Exception("Empty tree")
+            return None
 
         if current_node is None:
             current_node = self.root
@@ -226,25 +212,20 @@ class RangeTree:
 
         Parameters
         ----------
-        data : Node, int
+        data
             Wartosc lub node kotryu jest szukany
-
-        Raises
-        ------
-        Exception
-            Jeśli drzewo nie posiada korzenia
 
         Returns
         -------
-        bool, Node
-            True oraz wskaznik do noda jesli istnieje, False oraz None jesli nie istnieje
+        Node
+            Noda jesli istnieje, None jesli nie istnieje
         """
 
-        if type(data) == int:
+        if type(data) != Node:
             data = Node(data)
 
         if self.root is None:
-            raise Exception("Empty tree")
+            return None
         return self.__find_node(self.root, data)
 
     def __find_node(self, current_node, node):
@@ -264,9 +245,9 @@ class RangeTree:
         """
 
         if current_node is None:
-            return False, current_node
+            return current_node
         elif node.data == current_node.data:
-            return True, current_node
+            return current_node
         elif node.data <= current_node.data:
             return self.__find_node(current_node.left, node)
         else:
@@ -284,8 +265,6 @@ class RangeTree:
 
         Raises
         ------
-        Exception
-            Jeśli drzewo nie posiada korzenia
         ValueError
             Jeśli podano bledny zakres
 
@@ -295,23 +274,24 @@ class RangeTree:
             Tablica liczb ktore dla podanego zakresu znajduja sie w drzewie
         """
 
-        if self.root is None:
-            raise Exception("Empty tree")
         if x1 > x2:
             raise ValueError("Wrong scope")
-        res = []
-        root = self.__find_x_split(self.root, x1, x2)
-        if root.is_leaf():
-            if x1 <= root.data <= x2:
-                res.append(root.data)
-            return res
-        else:
-            res.append(root.data)
-            res = res + self.__range_searching_left(root.left, x1)
-            res = res + self.__range_searching_right(root.right, x2)
-            return res
 
-    def __range_searching_left(self, current_node, x1):
+        res = []
+        if self.root is None:
+            return res
+        x_split = self.__find_x_split(self.root, x1, x2)
+        if x_split.is_leaf():
+            if x1 <= x_split.data <= x2:
+                res.append(x_split.data)
+        else:
+            res.append(x_split.data)
+            self.__range_searching_left(x_split.left, x1, res)
+            self.__range_searching_right(x_split.right, x2, res)
+
+        return res
+
+    def __range_searching_left(self, current_node, x1, res):
         """Funkcja pomocnicza ktora dodaje do listy wszytkie nody znajdujace sie na lewo od Noda rozdzielajacego
 
         Parameters
@@ -320,25 +300,20 @@ class RangeTree:
             Node w ktorym sie aktualnie znajdujemy
         x1 : int
             Poczatek zkaresu
-
-        Returns
-        -------
-        list
-            Tablica liczb ktore na lewo on Noda rozdzielajacego znajduja sie w drzewie
+        res : list
+            Lista z elementami po lewej stronie od split noda
         """
 
-        res = []
         if x1 <= current_node.data:
             res.append(current_node.data)
             if current_node.left is not None:
-                res = res + self.__range_searching_left(current_node.left, x1)
+                self.__range_searching_left(current_node.left, x1, res)
             if current_node.right is not None:
-                res = res + self.__range_searching_left(current_node.right, x1)
+                self.__range_searching_left(current_node.right, x1, res)
         elif current_node.right is not None:
-            res = self.__range_searching_left(current_node.right, x1)
-        return res
+            self.__range_searching_left(current_node.right, x1, res)
 
-    def __range_searching_right(self, current_node, x2):
+    def __range_searching_right(self, current_node, x2, res):
         """Funkcja pomocnicza ktora dodaje do listy wszytkie nody znajdujace sie na prawo od Noda rozdzielajacego
 
         Parameters
@@ -347,23 +322,18 @@ class RangeTree:
             Node w ktorym sie aktualnie znajdujemy
         x2 : int
             Koniec zkaresu
-
-        Returns
-        -------
-        list
-            Tablica liczb ktore na prawo on Noda rozdzielajacego znajduja sie w drzewie
+        res : list
+            Lista z elementami po prawej stronie od split noda
         """
 
-        res = []
         if x2 >= current_node.data:
             res.append(current_node.data)
             if current_node.right is not None:
-                res = res + self.__range_searching_right(current_node.right, x2)
+                self.__range_searching_right(current_node.right, x2, res)
             if current_node.left is not None:
-                res = res + self.__range_searching_right(current_node.left, x2)
+                self.__range_searching_right(current_node.left, x2, res)
         elif current_node.left is not None:
-            res = self.__range_searching_right(current_node.left, x2)
-        return res
+            self.__range_searching_right(current_node.left, x2, res)
 
     def __find_x_split(self, current_node, x1, x2):
         """Funkcja pomocnicza ktora znajduje od Noda rozdzielajacego
@@ -393,19 +363,19 @@ class RangeTree:
     def print_tree(self):
         """Funkcja wyswietlajaca drzewo w kolejnosci inorder
 
-        Raises
-        ------
-        Exception
-            Jeśli drzewo nie posiada korzenia
         """
 
         if self.root is None:
-            raise Exception("Empty tree")
+            return
         self.__print_tree_node(self.root)
 
     def __print_tree_node(self, current_node):
         """Funkcja pomocnicza wypiujaca zawartosc Noda
 
+        Parameters
+        ----------
+        current_node : Node
+            Node w ktorym sie aktualnie znajdujemy
         """
 
         if current_node.left:
@@ -417,44 +387,37 @@ class RangeTree:
     def inorder_traversal(self):
         """Funkcja zwracajaca liste z zawartoscia Nodow w kolejnosci inorder
 
-        Raises
-        ------
-        Exception
-            Jeśli drzewo nie posiada korzenia
-
         Returns
         -------
         list
             Lista zawartosci Nodow w kolejnosci inorder
         """
 
+        res = []
         if self.root is None:
-            raise Exception("Empty tree")
-        return self.__inorder_traversal(self.root)
+            return res
 
-    def __inorder_traversal(self, current_node):
+        self.__inorder_traversal(self.root, res)
+        return res
+
+    def __inorder_traversal(self, current_node, res):
         """Funkcja pomocnicza przechodzaca przez drzewo w kolejnosci inorder
 
-        Returns
-        -------
-        list
-            Lista zawartosci Nodow w kolejnosci inorder dla aktualnego Noda
+        Parameters
+        ----------
+        current_node : Node
+            Node w ktorym sie aktualnie znajdujemy
+        res : list
+            Lista ktora jest wypelniana elementami w kolejnosci inorder od current_node
         """
 
-        res = []
         if current_node:
-            res = self.__inorder_traversal(current_node.left)
+            self.__inorder_traversal(current_node.left, res)
             res.append(current_node.data)
-            res = res + self.__inorder_traversal(current_node.right)
-        return res
+            self.__inorder_traversal(current_node.right, res)
 
     def preorder_traversal(self):
         """Funkcja zwracajaca liste z zawartoscia Nodow w kolejnosci preorder
-
-        Raises
-        ------
-        Exception
-            Jeśli drzewo nie posiada korzenia
 
         Returns
         -------
@@ -462,33 +425,31 @@ class RangeTree:
             Lista zawartosci Nodow w kolejnosci preorder
         """
 
+        res = []
         if self.root is None:
-            raise Exception("Empty tree")
-        return self.__preorder_traversal(self.root)
+            return res
 
-    def __preorder_traversal(self, current_node):
+        self.__preorder_traversal(self.root, res)
+        return res
+
+    def __preorder_traversal(self, current_node, res):
         """Funkcja pomocnicza przechodzaca przez drzewo w kolejnosci preorder
 
-        Returns
-        -------
-        list
-            Lista zawartosci Nodow w kolejnosci preorder dla aktualnego Noda
+        Parameters
+        ----------
+        current_node : Node
+            Node w ktorym sie aktualnie znajdujemy
+        res : list
+            Lista ktora jest wypelniana elementami w kolejnosci preorder od current_node
         """
 
-        res = []
         if current_node:
             res.append(current_node.data)
-            res = res + self.__preorder_traversal(current_node.left)
-            res = res + self.__preorder_traversal(current_node.right)
-        return res
+            self.__preorder_traversal(current_node.left, res)
+            self.__preorder_traversal(current_node.right, res)
 
     def postorder_traversal(self):
         """Funkcja zwracajaca liste z zawartoscia Nodow w kolejnosci postorder
-
-        Raises
-        ------
-        Exception
-            Jeśli drzewo nie posiada korzenia
 
         Returns
         -------
@@ -496,22 +457,25 @@ class RangeTree:
             Lista zawartosci Nodow w kolejnosci postorder
         """
 
+        res = []
         if self.root is None:
-            raise Exception("Empty tree")
-        return self.__postorder_traversal(self.root)
+            return res
 
-    def __postorder_traversal(self, current_node):
+        self.__postorder_traversal(self.root, res)
+        return res
+
+    def __postorder_traversal(self, current_node, res):
         """Funkcja pomocnicza przechodzaca przez drzewo w kolejnosci postorder
 
-        Returns
-        -------
-        list
-            Lista zawartosci Nodow w kolejnosci postorder dla aktualnego Noda
+        Parameters
+        ----------
+        current_node : Node
+            Node w ktorym sie aktualnie znajdujemy
+        res : list
+            Lista ktora jest wypelniana elementami w kolejnosci postorder od current_node
         """
 
-        res = []
         if current_node:
-            res = self.__postorder_traversal(current_node.left)
-            res = res + self.__postorder_traversal(current_node.right)
+            self.__postorder_traversal(current_node.left, res)
+            self.__postorder_traversal(current_node.right, res)
             res.append(current_node.data)
-        return res
