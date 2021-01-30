@@ -240,8 +240,8 @@ class RangeTree:
 
         Returns
         -------
-        bool, Node
-            True oraz wskaznik do noda jesli istnieje, False oraz None jesli nie istnieje
+        Node
+            Wskaznik do noda jesli istnieje, None jesli nie istnieje
         """
 
         if current_node is None:
@@ -285,8 +285,8 @@ class RangeTree:
             if x1 <= x_split.data <= x2:
                 res.append(x_split.data)
         else:
-            res.append(x_split.data)
             self.__range_searching_left(x_split.left, x1, res)
+            res.append(x_split.data)
             self.__range_searching_right(x_split.right, x2, res)
 
         return res
@@ -305,9 +305,9 @@ class RangeTree:
         """
 
         if x1 <= current_node.data:
-            res.append(current_node.data)
             if current_node.left is not None:
                 self.__range_searching_left(current_node.left, x1, res)
+            res.append(current_node.data)
             if current_node.right is not None:
                 self.__range_searching_left(current_node.right, x1, res)
         elif current_node.right is not None:
@@ -327,11 +327,11 @@ class RangeTree:
         """
 
         if x2 >= current_node.data:
+            if current_node.left is not None:
+                self.__range_searching_right(current_node.left, x2, res)
             res.append(current_node.data)
             if current_node.right is not None:
                 self.__range_searching_right(current_node.right, x2, res)
-            if current_node.left is not None:
-                self.__range_searching_right(current_node.left, x2, res)
         elif current_node.left is not None:
             self.__range_searching_right(current_node.left, x2, res)
 

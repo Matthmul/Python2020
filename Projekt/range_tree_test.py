@@ -90,9 +90,12 @@ class TestList(unittest.TestCase):
         self.assertEqual(str(the_exception.args[0]), "Wrong scope")
 
         self.assertEqual(self.rangetree_2.range_searching(20, 30), [21, 21, 24, 24])
-        self.assertEqual(self.rangetree_2.range_searching(20, 40), [21, 21, 33, 24, 33, 24])
-        self.assertEqual(self.rangetree_2.range_searching(10, 50), [42, 21, 15, 15, 17, 17, 21, 33, 24, 24, 33, 42])
-        self.assertEqual(self.rangetree_2.range_searching(60, 80), [65, 65, 73, 78, 73])
+        self.assertEqual(self.rangetree_2.range_searching(20, 40), [21, 21, 24, 24, 33, 33])
+        self.assertEqual(self.rangetree_2.range_searching(10, 50), [15, 15, 17, 17, 21, 21, 24, 24, 33, 33, 42, 42])
+        self.assertEqual(self.rangetree_2.range_searching(0, 80),
+                         [6, 6, 15, 15, 17, 17, 21, 21, 24, 24, 33, 33, 42, 42, 51, 51, 52, 52, 57, 57, 65, 65, 73, 73,
+                          78])
+        self.assertEqual(self.rangetree_2.range_searching(60, 80), [65, 65, 73, 73, 78])
         self.assertEqual(self.rangetree_2.range_searching(0, 5), [])
         self.assertEqual(self.rangetree_2.range_searching(22, 23), [])
         self.assertEqual(self.rangetree_2.range_searching(100, 105), [])
